@@ -24,6 +24,8 @@ rcParams['font.style'] = 'normal'
 
 # import functions to process the data
 
+names = ['c16', 'c12', 'c8']  # names of the samples
+
 import sys
 import os
 from diff_eval_functions import * # need to clean up a bit this file
@@ -121,9 +123,12 @@ def extract_results():
 
     # grab all subdirectories
     subdirs = [f.path for f in os.scandir(folder) if f.is_dir()]
-    # make sure c8 is the last subdir
-    subdirs = [subdirs[1], subdirs[0], subdirs[2]] # c16, c12, c8
-    names = ['c16', 'c12', 'c8']
+    # make sure order is c16, c12, c8
+    subdirs.sort()  # sort alphabetically
+    subdirs = [ subdirs[1], subdirs[0], subdirs[2]]  # reorder to c16, c12, c8
+
+    # names = ['c16', 'c12', 'c8']
+
 
     binning_time_function =  ConstantBins
     binning_time_params = [50] # 25 = 10 bins per ns (4ps * n = x bin/ns), assuming 4 ps resolution 
@@ -355,7 +360,10 @@ def plot_MSD(timevalues_all, deltaSigmaSquare_all, MSD_analy_all, time_arr_analy
     # bigger font for the labels, scientific notation
     ax.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
-def plot_alphas(alphas, err_alphas, ligand_lengths, names, colors, SAVE = False):
+    # save
+    plt.savefig('MSD_vs_Time.svg', dpi=300)
+
+def plot_alphas(alphas, err_alphas, ligand_lengths, names, Cn, Cn_err, colors, SAVE = False):
     fig,ax = plt.subplots(figsize=(6, 5))
     # plot alpha vs ligand length
 
@@ -364,18 +372,19 @@ def plot_alphas(alphas, err_alphas, ligand_lengths, names, colors, SAVE = False)
 
     for i in range(len(alphas)):
         name = names[i]
-        length = ligand_lengths[i]
-        ax.errorbar(float(length), alphas[i], yerr=err_alphas[i],
+        #length = ligand_lengths[i]
+        Cn_value = Cn[i]
+        ax.errorbar(Cn_value, alphas[i], xerr=Cn_err[i], yerr=err_alphas[i],
                     color=color, marker='o', markersize=20, linestyle='None',
                     label=name, linewidth=1.5, markerfacecolor='white',
                     markeredgecolor=colors[i], markeredgewidth=4.0,
                     elinewidth = 3, ecolor= colors[i],
                     )
 
-    ax.set_xlabel(r'Alkyl Chain Length ($\it{n}$)', )
+    ax.set_xlabel(r'Center-to-center distance (nm)', )
     ax.set_ylabel(r'$\mathrm{\alpha}$',  )
 
-    ax.set_xlim(7, 17)
+    ax.set_xlim(8, 21)
     ax.set_ylim(0, 1)
 
     #ax.legend(bbox_to_anchor=(1.0, 1), loc='upper right', fontsize=12, frameon=False)
@@ -387,7 +396,7 @@ def plot_alphas(alphas, err_alphas, ligand_lengths, names, colors, SAVE = False)
     ax.tick_params(axis='y', which='minor', direction='out', length=3, width=1.5, 
                     top=False, right=False, )
 
-    ax.set_xticks([8, 12, 16])
+    ax.set_xticks([10, 15, 20])
     ax.set_yticks([0.0, 0.25, 0.5, 0.75, 1.0])
 
     # grid only for y axis
@@ -398,10 +407,15 @@ def plot_alphas(alphas, err_alphas, ligand_lengths, names, colors, SAVE = False)
 
     # add tick on y = 0 and 1 but no grid line
     ax.set_yticks([0.0, 0.5, 1.0], minor=True)
+    ax.tick_params(axis='y', which='minor', direction='out', length=0, width=1.5, 
+                    top=False, right=False, )
+
+    # save
+    plt.savefig('Alpha_vs_Ligand_Length.svg', dpi=300)
 
 def plot_D_analy( MSD_analy_all, time_arr_analy_all, names, colors):
 
-    fig, ax2 = plt.subplots(figsize=(6, 6))
+    fig, ax2 = plt.subplots(figsize=(6, 5))
     for i, msd in enumerate(MSD_analy_all):
         name = names[i]
         time_arr_analy = time_arr_analy_all[i]
@@ -434,12 +448,15 @@ def plot_D_analy( MSD_analy_all, time_arr_analy_all, names, colors):
     # scientific notation for the y axis
     ax2.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
-def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, ligand_lengths, SAVE = False):
+    # savw
+    plt.savefig('Diffusion_Coefficient_vs_Time.svg', dpi=300)
+
+def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, Cn, Cn_err , SAVE = False):
 
     # get the intensiy for each time point as the sum of the Merged for that index
     
-    fig, ax = plt.subplots(figsize=(6, 6))
-    fig, ax2 = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(6, 5))
+    fig, ax2 = plt.subplots(figsize=(6, 5))
 
     for i, Merged in enumerate(Merged_all):
         name = names[i]
@@ -486,7 +503,7 @@ def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, ligand_leng
         tau_ld = timeValuesMerged[np.where(intensity < intensity[0] / np.e)[0][0]]  # find the first point where the profile is less than 1/e of the initial value
         ax.axvline(x=tau_ld, color=colors[i], linestyle=':', linewidth=1.5, alpha=0.6)
 
-        ax2.plot(ligand_lengths[i], tau_ld, color=colors[i], marker='o', markersize=20, linestyle='None',
+        ax2.errorbar(Cn[i], tau_ld, xerr=Cn_err[i], color=colors[i], marker='o', markersize=20, linestyle='None',
                  label=name, linewidth=1.5, markerfacecolor='white',
                 markeredgecolor=colors[i], markeredgewidth=4.0,
                 )
@@ -496,14 +513,14 @@ def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, ligand_leng
 
     ax.set_yscale('log')
 
-    ax2.set_xlabel(r'Alkyl Chain Length ($\it{n}$)')
+    ax2.set_xlabel(r'Center-to-center distance (nm)')
     ax2.set_ylabel(r' $\mathrm{\tau_{1/e} (ns)}$')
-    ax2.set_xlim(7, 17)
+    ax2.set_xlim(8, 21)
 
     ax2.set_ylim(5, 19)
 
-    ax2.set_xticks([8, 12, 16])
-    ax2.set_yticks([6, 8, 10, 12, 14, 16, 18])
+    ax2.set_xticks([10, 15, 20])
+    ax2.set_yticks([6,10, 14, 18])
 
     ax2.minorticks_off()
     ax2.tick_params(axis='both', which='major', direction='out', length=6, width=1.5, 
@@ -520,12 +537,15 @@ def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, ligand_leng
     ax2.axhline(y=16, color='black', linestyle=':', linewidth=2.5, alpha=0.6)
     ax2.axhline(y=18, color='black', linestyle=':', linewidth=2.5, alpha=0.6)
 
+    # save
+    plt.savefig('Lifetimes_vs_Ligand_Length.svg', dpi=300)
 
 
-def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, errorsquare_all, ligand_lengths, names, colors):
 
-    fig, axLd = plt.subplots(figsize=(6, 6))
-    fig, ax2 = plt.subplots(figsize=(6, 6))
+def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, errorsquare_all, Cn, Cn_err, names, colors):
+
+    fig, axLd = plt.subplots(figsize=(6, 5))
+    fig, ax2 = plt.subplots(figsize=(6, 5))
 
     for i, Merged in enumerate(Merged_all):
         name = names[i]
@@ -563,19 +583,19 @@ def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, e
 
         # plot diff length vs ligand length
 
-        length = ligand_lengths[i]
-        ax2.plot(float(length), Ld, color=colors[i], marker='o', markersize=30, linestyle='None',
-            label=name, linewidth=3.5, markerfacecolor='None',
+        Cn_value = Cn[i]
+        ax2.errorbar(Cn_value, Ld, xerr=Cn_err[i], color=colors[i], marker='o', markersize=30, linestyle='None',
+            label=name, linewidth=3.5, markerfacecolor='White',
             markeredgecolor=colors[i], markeredgewidth=5.,
             )
 
-    ax2.set_xlabel(r'Alkyl Chain Length ($\it{n}$)')
+    ax2.set_xlabel(r'Center-to-center distance (nm)')
     ax2.set_ylabel(r'$\mathrm{L_D} (nm)$')
 
-    ax2.set_xlim(7, 17)
+    ax2.set_xlim(8, 21)
     ax2.set_ylim(0, 90)
 
-    ax2.set_xticks([8, 12, 16])
+    ax2.set_xticks([10, 15, 20])
     ax2.set_yticks([0, 20, 40, 60])
 
     #ax2.legend()
@@ -589,7 +609,7 @@ def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, e
     ax2.tick_params(axis='y', which='minor', direction='out', length=3, width=1.5, 
                     top=False, right=False, )
 
-    ax2.set_xticks([8, 12, 16])
+    ax2.set_xticks([10, 15, 20])
     ax2.set_yticks([0, 20, 40, 60, 80])
 
     # grid only for y axis
@@ -597,6 +617,9 @@ def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, e
     ax2.axhline(y=40, color='black', linestyle=':', linewidth=2.5, alpha=0.6)
     ax2.axhline(y=60, color='black', linestyle=':', linewidth=2.5, alpha=0.6)
     ax2.axhline(y=80, color='black', linestyle=':', linewidth=2.5, alpha=0.6)
+
+    # save the figure
+    plt.savefig('Diffusion_Lengths_vs_Ligand_Length.svg', dpi=300)
 
 
 def read_trpl_data(file, metadata_file):
@@ -743,6 +766,8 @@ def main():
     colors = ['blue', 'green', 'red',]
     names = ['c16', 'c12', 'c8']
     ligand_lengths = [16, 12, 8]  # in carbons
+    Cn_distance = [9.61, 12.51, 16.23] # measured by Simon with SEM. In nm
+    Cn_distance_var = [1.22, 2.59, 4.57]
 
     # Plot the diffusion maps. 4a (+ SI)
     plot_Diff_Map(MergedNormalized_all, SpatialValues, timeValuesMerged_all, names)
@@ -751,15 +776,15 @@ def main():
     plot_MSD(timevalues_all, deltaSigmaSquare_all, MSD_analy_all, time_arr_analy_all, names, colors)
 
     # Next is the alpha vs ligand length plot (4c)
-    plot_alphas(alphas, err_alphas, ligand_lengths, names, colors)
+    plot_alphas(alphas, err_alphas, ligand_lengths, names, Cn_distance, Cn_distance_var, colors)
 
     # plot the analytic diffusion coefficient as a function of time (4d)
     plot_D_analy( MSD_analy_all, time_arr_analy_all, names, colors)
 
     # Plot the lifetime + fits (SI), also plot tau(1/e) vs ligand length (inset)
-    plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, ligand_lengths)
+    plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, Cn_distance, Cn_distance_var)
 
-    plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, errorsquare_all, ligand_lengths, names, colors)
+    plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, errorsquare_all, Cn_distance, Cn_distance_var, names, colors)
     
     # one more figure... Power dependent data (SI)
     get_plot_powerData()
@@ -769,4 +794,5 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     main()
     plt.show()  # Show the plots interactively
-# %%
+
+
