@@ -14,8 +14,7 @@ import json
 import matplotlib.font_manager as font_manager
 from matplotlib import rcParams
 
-font = font_manager.FontProperties(family='Arial',
-                                   
+font = font_manager.FontProperties(family='Arial',                     
                                    style='normal', size=40)
 
 rcParams['font.family'] = font.get_name()
@@ -28,7 +27,7 @@ names = ['c16', 'c12', 'c8']  # names of the samples
 
 import sys
 import os
-from diff_eval_functions import * # need to clean up a bit this file
+from diff_eval_functions import * 
 import glob
 
 def Diffusion_curve(t, D, alpha):
@@ -381,22 +380,23 @@ def plot_alphas(alphas, err_alphas, ligand_lengths, names, Cn, Cn_err, colors, S
                     elinewidth = 3, ecolor= colors[i],
                     )
 
-    ax.set_xlabel(r'Center-to-center distance (nm)', )
+    ax.set_xlabel(r'$d_{c-c}$ (nm)', )
     ax.set_ylabel(r'$\mathrm{\alpha}$',  )
 
-    ax.set_xlim(8, 21)
+    ax.set_xlim(7, 17)
     ax.set_ylim(0, 1)
 
     #ax.legend(bbox_to_anchor=(1.0, 1), loc='upper right', fontsize=12, frameon=False)
     ax.minorticks_off()
+    # larger ticklabels
     ax.tick_params(axis='both', which='major', direction='out', length=6, width=1.5, 
-                    top=False, right=False, )
+                    top=False, right=False, labelsize = 24)
     ax.tick_params(axis='x', which='minor', direction='out', length=0, width=1.5, 
                     top=False, right=False, )
     ax.tick_params(axis='y', which='minor', direction='out', length=3, width=1.5, 
                     top=False, right=False, )
 
-    ax.set_xticks([10, 15, 20])
+    ax.set_xticks([8, 12, 16])
     ax.set_yticks([0.0, 0.25, 0.5, 0.75, 1.0])
 
     # grid only for y axis
@@ -415,7 +415,7 @@ def plot_alphas(alphas, err_alphas, ligand_lengths, names, Cn, Cn_err, colors, S
 
 def plot_D_analy( MSD_analy_all, time_arr_analy_all, names, colors):
 
-    fig, ax2 = plt.subplots(figsize=(6, 5))
+    fig, ax2 = plt.subplots(figsize=(5.5, 5))
     for i, msd in enumerate(MSD_analy_all):
         name = names[i]
         time_arr_analy = time_arr_analy_all[i]
@@ -513,18 +513,18 @@ def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, Cn, Cn_err 
 
     ax.set_yscale('log')
 
-    ax2.set_xlabel(r'Center-to-center distance (nm)')
+    ax2.set_xlabel(r'$d_{c-c}$ (nm)')
     ax2.set_ylabel(r' $\mathrm{\tau_{1/e} (ns)}$')
-    ax2.set_xlim(8, 21)
+    ax2.set_xlim(7, 17)
 
     ax2.set_ylim(5, 19)
 
-    ax2.set_xticks([10, 15, 20])
+    ax2.set_xticks([8, 12, 16])
     ax2.set_yticks([6,10, 14, 18])
 
     ax2.minorticks_off()
     ax2.tick_params(axis='both', which='major', direction='out', length=6, width=1.5, 
-                    top=False, right=False, )
+                    top=False, right=False, labelsize = 24)
     ax2.tick_params(axis='x', which='minor', direction='out', length=3, width=1.5,
                     top=False, right=False, )
 
@@ -544,7 +544,7 @@ def plot_lifetimes_(Merged_all, timeValuesMerged_all, names, colors, Cn, Cn_err 
 
 def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, errorsquare_all, Cn, Cn_err, names, colors):
 
-    fig, axLd = plt.subplots(figsize=(6, 5))
+    fig, axLd = plt.subplots(figsize=(5.5, 5))
     fig, ax2 = plt.subplots(figsize=(6, 5))
 
     for i, Merged in enumerate(Merged_all):
@@ -584,18 +584,18 @@ def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, e
         # plot diff length vs ligand length
 
         Cn_value = Cn[i]
-        ax2.errorbar(Cn_value, Ld, xerr=Cn_err[i], color=colors[i], marker='o', markersize=30, linestyle='None',
+        ax2.errorbar(Cn_value, Ld, xerr=Cn_err[i], color=colors[i], marker='o', markersize=20, linestyle='None',
             label=name, linewidth=3.5, markerfacecolor='White',
-            markeredgecolor=colors[i], markeredgewidth=5.,
+            markeredgecolor=colors[i], markeredgewidth=4.,
             )
 
-    ax2.set_xlabel(r'Center-to-center distance (nm)')
+    ax2.set_xlabel(r'$d_{c-c}$ (nm)')
     ax2.set_ylabel(r'$\mathrm{L_D} (nm)$')
 
-    ax2.set_xlim(8, 21)
+    ax2.set_xlim(7, 17)
     ax2.set_ylim(0, 90)
 
-    ax2.set_xticks([10, 15, 20])
+    ax2.set_xticks([8, 12, 16])
     ax2.set_yticks([0, 20, 40, 60])
 
     #ax2.legend()
@@ -603,13 +603,13 @@ def plot_diff_lengths( Merged_all, timeValuesMerged_all, deltaSigmaSquare_all, e
 
     ax2.minorticks_off()
     ax2.tick_params(axis='both', which='major', direction='out', length=6, width=1.5, 
-                    top=False, right=False, )
+                    top=False, right=False, labelsize = 24)
     ax2.tick_params(axis='x', which='minor', direction='out', length=0, width=1.5, 
                     top=False, right=False, )
     ax2.tick_params(axis='y', which='minor', direction='out', length=3, width=1.5, 
                     top=False, right=False, )
 
-    ax2.set_xticks([10, 15, 20])
+    ax2.set_xticks([8, 12, 16])
     ax2.set_yticks([0, 20, 40, 60, 80])
 
     # grid only for y axis
@@ -796,3 +796,5 @@ if __name__ == "__main__":
     plt.show()  # Show the plots interactively
 
 
+
+# %%
