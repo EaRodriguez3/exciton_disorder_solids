@@ -745,7 +745,7 @@ def get_plot_powerData():
         ax.text(0.35, 0.9, f'Power law fit exponent: {popt[1]:.2f}', 
             fontsize=24, ha='center', va='center', transform=ax.transAxes)
 
-
+#%%
 def main():
 
     """
@@ -797,4 +797,3 @@ if __name__ == "__main__":
 
 
 
-# %%
