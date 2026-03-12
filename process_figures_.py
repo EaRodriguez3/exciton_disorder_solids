@@ -142,6 +142,16 @@ def extract_results():
     MergedNormalized_all = []
     SpatialValues = []
 
+    # for numerical sims
+    sims_fol = 'data\\simulations\\variances_fine_adjustment\\'
+    files_sims = glob.glob(sims_fol + '*dat')
+    files_sims = [files_sims[1], files_sims[0], files_sims[2]] # reorder to c16, c12, c8
+
+    timeValues_sims_all = []
+    var_sims_all = []
+    energy_sims_all = []
+
+
     # loop through each subdirectory
     for i, subdir in enumerate(subdirs):
         print(f'Processing {subdir}')
@@ -165,6 +175,17 @@ def extract_results():
         else:
             cutoff = 0
         timeValues, tend_index, deltaSigmaSquare, errorsquare, errorsquaresum, sigmas = extract_MSD(MergedNormalized, timeValuesMerged, popt, success, cutoff, 6, binningSigmasFunction, binningSigmas, t1_index = 0)
+
+        # if you want to add simulation results, uncomment the few following lines + the end of the function where we return the results
+        '''        
+        file_sims = files_sims[i]
+        data_sims = np.loadtxt(file_sims)
+
+        timeValues_sims_all.append(data_sims[:, 0])
+        var_sims_all.append(data_sims[:, 1])
+        energy_sims_all.append(data_sims[:, 2])
+        '''
+
         # put results into a list, we will need them to plot our main figures in a bit
         timevalues_all.append(timeValues)
         deltaSigmaSquare_all.append(deltaSigmaSquare)
@@ -175,7 +196,7 @@ def extract_results():
         MergedNormalized_all.append(MergedNormalized)
         SpatialValues.append(spatialValues)
     # return all the results
-    return timevalues_all, deltaSigmaSquare_all, errorsquare_all, Merged_all, MergedNormalized_all, names, timeValuesMerged_all, SpatialValues
+    return timevalues_all, deltaSigmaSquare_all, errorsquare_all, Merged_all, MergedNormalized_all, names, timeValuesMerged_all, SpatialValues,# timeValues_sims_all, var_sims_all, energy_sims_all
 
 def calculate_diffusion_coefficients(timevalues_all, deltaSigmaSquare_all, errorsquare_all, names, timeValuesMerged_all,):
 
@@ -754,9 +775,13 @@ def main():
     Took
     """
     
-    # Extract results from the diffusion analysis
-    timevalues_all, deltaSigmaSquare_all, errorsquare_all, Merged_all, MergedNormalized_all, names, timeValuesMerged_all, SpatialValues = extract_results()
+    # Extract results from the diffusion analysis:
+    # if no simulation this line
+    timevalues_all, deltaSigmaSquare_all, errorsquare_all, Merged_all, MergedNormalized_all, names, timeValuesMerged_all, SpatialValues, = extract_results()
+    # if simulation this one
+    #timevalues_all, deltaSigmaSquare_all, errorsquare_all, Merged_all, MergedNormalized_all, names, timeValuesMerged_all, SpatialValues, timeValues_sims_all, var_sims_all, energy_sims_all = extract_results()
     print("Results extracted successfully.")
+    
     # make the fits
     MSD_analy_all, Ds, alphas, err_Ds, err_alphas, time_arr_analy_all = calculate_diffusion_coefficients(timevalues_all, deltaSigmaSquare_all, errorsquare_all, names, timeValuesMerged_all)
     print("Diffusion coefficients calculated successfully.")
@@ -794,6 +819,5 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     main()
     plt.show()  # Show the plots interactively
-
 
 
