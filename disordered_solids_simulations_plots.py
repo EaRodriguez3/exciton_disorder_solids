@@ -217,18 +217,21 @@ def plot_energetic_spatial_disorder_dynamics():
         spectral_shift_arr = data[:,2] # eV
 
 
-        var_arr = (var_arr - var_arr[0])
+        var_arr = (var_arr - var_arr[0]) * 1e-6 # convert to um^2 and set initial value to 0
         spectral_shift_arr = (spectral_shift_arr - spectral_shift_arr[0])
 
         ax_var.plot(time_arr, var_arr, color=color, label=label)
         ax_var.set_xlabel('Time (ns)')
-        ax_var.set_ylabel(r'$\sigma^2$ (n$m^2$)')
+        ax_var.set_ylabel(r'MSD ($\mu$m$^2$)')
 
         ax_var.legend(frameon=False)
-        ax_var.set_yticks([0, 1000, 2000])
+        #ax_var.set_yticks([0, 1000, 2000])
         
         ax_var.set_xlim(-0.05, 5.05)
-        ax_var.set_ylim(0, 2500)
+        ax_var.set_ylim(-0.01 *1e-3, 2.5*1e-3)
+
+        # sci notation for y axis
+        ax_var.ticklabel_format(axis='y', style='sci', scilimits=(0,0),)
 
 
         ax_deltaE.plot(time_arr, spectral_shift_arr, color=color, label=label)
@@ -240,7 +243,7 @@ def plot_energetic_spatial_disorder_dynamics():
         ax_deltaE.set_ylim(-25,1)
 
     # save as pdf inside the folder where the data is
-    fig_var.savefig(fol + 'variance_over_time.pdf', dpi=300, bbox_inches='tight')
+    fig_var.savefig(fol + 'variance_over_time_sci.pdf', dpi=300, bbox_inches='tight')
     fig_deltaE.savefig(fol + 'delta_e_over_time.pdf', dpi=300, bbox_inches='tight')
 
 
@@ -293,9 +296,9 @@ def plot_bandgap_vs_crystal_size():
 def main():
     #plot_crystal_structures()
     crystal_plots_sims()
-    #plot_variance_sizes_results() # deprecated 
-    #plot_energetic_spatial_disorder_dynamics()
-    #plot_bandgap_vs_crystal_size()
+    plot_variance_sizes_results() # deprecated 
+    plot_energetic_spatial_disorder_dynamics()
+    plot_bandgap_vs_crystal_size()
 
 
 #%%

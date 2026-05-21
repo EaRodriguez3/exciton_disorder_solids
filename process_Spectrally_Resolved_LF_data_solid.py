@@ -576,8 +576,8 @@ def main():
         
     #load the data
 
-    #folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data\\spectrally_resolved_LF_solid')
-    folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '/Users/antonellacutrupi/Desktop/Simon_SP_LF/all')
+    folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data\\spectrally_resolved_LF_solid')
+    #folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '/Users/antonellacutrupi/Desktop/Simon_SP_LF/all')
 
     # Load all matched data and metadata
     measurements = load_data_and_metadata(folder)
