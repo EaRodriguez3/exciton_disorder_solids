@@ -474,18 +474,18 @@ def plot_full_figure(
 
         im = ax_left.imshow(
             data_norm, cmap='magma',
-            extent=[time_arr[0], time_lim, wavelengths[0], wavelengths[-1]],
+            extent=[time_arr[0], time_lim, wavelengths[-1], wavelengths[0]],
             origin='upper', aspect=0.3
         )
         ax_left.set_xlim(0, time_lim)
         ymin, ymax = wavelengths[0], wavelengths[-1]
-        median_inverted = ymax + ymin - gaussian_peaks_smoothed
+        #median_inverted = ymax + ymin - gaussian_peaks_smoothed
+        median_inverted = gaussian_peaks_smoothed
         ax_left.plot(time_arr_binned, median_inverted, 'w-', lw=2)
         ax_left.text(time_lim-4, 490, format_code(code), fontsize=14, color='white', va='top')
         ax_left.tick_params(axis='both', which='major', labelsize=16)
         yticks_nm = ax_left.get_yticks()
         yticks_eV = 1240.0 / yticks_nm
-        #ax_left.invert_yaxis()
         ax_left.set_yticklabels([f"{e:.1f}" for e in yticks_eV])
         if i == 0:
             first_im = im  # save handle of the first map
@@ -576,8 +576,8 @@ def main():
         
     #load the data
 
-    folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data\\spectrally_resolved_LF_solid')
-    #folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '/Users/antonellacutrupi/Desktop/Simon_SP_LF/all')
+    #folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data\\spectrally_resolved_LF_solid')
+    folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '/Users/antonellacutrupi/Desktop/Simon_SP_LF/all')
 
     # Load all matched data and metadata
     measurements = load_data_and_metadata(folder)
