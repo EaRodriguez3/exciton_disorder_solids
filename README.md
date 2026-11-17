@@ -11,7 +11,7 @@ Requirements
 
 Usage
 
-Inside the 'data' folder, add the data found in '' (add repository). The data should be inside folders named 'tplm', 'power' and 'spectral' for the analysis.
+Inside the 'data' folder, add the data found in 'https://edatos.consorciomadrono.es/dataset.xhtml?persistentId=doi:10.21950/A0AB3H'. Downloading the zip directly and extracting the data should keep the directory order for the script to work.
 
 After that is ready you can use an IDE to run the code or use the command window by typing: python your\_folder/process_figures\_.py
 
